@@ -1,0 +1,77 @@
+CREATE TABLE DEPARTEMEN (
+	id_dep INT PRIMARY KEY,
+	nama_dep VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE karyawan (
+	id_karyawan VARCHAR PRIMARY KEY,
+	nama VARCHAR(30),
+	id_dep INT, FOREIGN KEY (id_dep) REFERENCES departemen(id_dep)
+);
+
+CREATE OR REPLACE FUNCTION st_select()
+RETURNS TABLE (
+	_id_karyawan INT,
+	_nama VARCHAR,
+	_id_dep INT,
+	_nama dep VARCHAR
+) AS $$
+BEGIN
+	RETURN QUERY
+	SELECT
+		k.id_karyawan, k.nama_karyawan, k.id_dep, d.nama_dep
+		FROM karyawan k
+		LEFT JOIN departemen d
+		ON k.id_dep =  d.id_dep;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION st_insert
+(
+	_nama VARCHAR,
+	_id_dep INT
+)
+RETURN INT AS $$
+BEGIN
+	INSERT INTO karyawan (nama_karyawan,id_dep)
+	VALUES (_nama, _id_dep);
+			RETURN 1;
+	EXCEPTION 
+		WHEN OTHERS THEN
+			RETURN 0;
+END
+$$ LANGUAGE plpgsql;
+	
+
+CREATE OR REPLACE FUNCTION st_update(
+	_id_karyawan INT,
+	_nama VARCHAR,
+	_id_dep INT
+)
+	RETURNS INT AS $$
+	BEGIN 
+		UPDATE karyawan
+		SET nama_karyawan = _nama, id_dep = _id_dep
+		WHERE id_karyawan = _id_karyawan;
+		RETURN 1;
+	EXCEPTION 
+		WHEN OTHERS THEN
+			RETURN 0;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION st_delete(
+	id_karyawan INT
+)
+RETURNS INT AS $$
+BEGIN
+	DELETE FROM karyawan
+	WHERE id_karyawan = _id_karyawan;
+			RETURN 1;
+	EXCEPTION 
+		WHEN OTHERS THEN
+			RETURN 0;
+END
+$$ LANGUAGE plpgsql;
+	
